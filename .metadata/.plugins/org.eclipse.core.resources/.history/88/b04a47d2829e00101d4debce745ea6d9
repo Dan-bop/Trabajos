@@ -1,0 +1,40 @@
+}package controlador;
+
+import java.io.IOException;
+import dao.ClienteDAO;
+import dao.PedidoDAO;
+import dao.ProductoDAO;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.*;
+import modelo.ProductoTop;
+
+@WebServlet("/AdminDashboardServlet")
+public class AdminDashboardServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        PedidoDAO pedidoDAO = new PedidoDAO();
+        ClienteDAO clienteDAO = new ClienteDAO();
+        ProductoDAO productoDAO = new ProductoDAO();
+
+        double totalVentas = pedidoDAO.calcularTotalVentas();
+        int totalPedidos = pedidoDAO.contarPedidos();
+        int totalClientes = clienteDAO.contarClientes();
+        ProductoTop productoTop = productoDAO.obtenerProductoMasVendido();
+
+        request.setAttribute("totalVentas", totalVentas);
+        request.setAttribute("totalPedidos", totalPedidos);
+        request.setAttribute("totalClientes", totalClientes);
+        request.setAttribute("productoTop", productoTop);
+
+        request.getRequestDispatcher("admin-dashboard.jsp").forward(request, response);
+    }
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        doGet(request, response);
+    }
+}

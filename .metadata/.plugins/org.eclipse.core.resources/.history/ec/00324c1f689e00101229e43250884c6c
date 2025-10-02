@@ -1,0 +1,24 @@
+package dao;
+
+import jakarta.persistence.EntityManager;
+import modelo.Carrito;
+import util.JPAUtil;
+
+public class CarritoDAO {
+
+    public void guardar(Carrito carrito) {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(carrito); // guarda carrito y cascada sus detalles
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            System.err.println("❌ Error al guardar el carrito: " + e.getMessage());
+            em.getTransaction().rollback();
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+}

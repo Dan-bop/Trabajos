@@ -1,0 +1,44 @@
+package controlador;
+
+import java.io.IOException;
+import java.util.List;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.*;
+import modelo.ItemCarrito;
+
+@WebServlet("/checkout")
+public class CheckoutServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        HttpSession session = request.getSession();
+        Cliente cliente = (Cliente) session.getAttribute("cliente");
+        List<ItemCarrito> items = (List<ItemCarrito>) session.getAttribute("carrito");
+
+        if (cliente == null || items == null || items.isEmpty()) {
+            response.sendRedirect("catalogo.jsp");
+            return;
+        }
+
+        String pago = request.getParameter("pago");
+        String envio = request.getParameter("envio");
+
+        Pedido pedido = new Pedido();
+        pedido.setCliente(cliente);
+        pedido.setFecha(new Timestamp(System.currentTimeMillis()));
+        pedido.setMetodoPago(pago);
+        pedido.setFormaEntrega(envio);
+        pedido.setEstado("pendiente");
+
+        // Aquí deberías agregar los productos del carrito al pedido
+        pedido.setItems(items); // si tienes una relación @OneToMany
+
+        new PedidoDAO().guardar(pedido);
+        session.removeAttribute("carrito");
+
+        request.setAttribute("mensaje", "✅ Pedido registrado correctamente.");
+        request.getRequestDispatcher("checkout.jsp").forward(request, response);
+    }
+}
+

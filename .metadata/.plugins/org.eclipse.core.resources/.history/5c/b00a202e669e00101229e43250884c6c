@@ -1,0 +1,24 @@
+package dao;
+
+public class ClienteDAO {
+	public Cliente validar(String correo, String clave) {
+	    EntityManager em = JPAUtil.getEntityManager();
+	    Cliente cliente = null;
+	    try {
+	        TypedQuery<Cliente> query = em.createQuery(
+	            "SELECT c FROM Cliente c WHERE c.correo = :correo AND c.clave = :clave", Cliente.class);
+	        query.setParameter("correo", correo);
+	        query.setParameter("clave", clave);
+	        cliente = query.getSingleResult();
+	    } catch (Exception e) {
+	        cliente = null;
+	    } finally {
+	        if (em != null && em.isOpen()) {
+	            em.close();
+	        }
+	    }
+	    return cliente;
+	}
+
+
+}

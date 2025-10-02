@@ -1,0 +1,46 @@
+package controlador;
+
+import java.io.IOException;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.*;
+import modelo.Cliente;
+import dao.ClienteDAO;
+
+@WebServlet("/perfil")
+public class PerfilServlet extends HttpServlet {
+    private ClienteDAO clienteDAO = new ClienteDAO();
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        HttpSession session = request.getSession();
+        Cliente cliente = (Cliente) session.getAttribute("cliente");
+
+        if (cliente == null) {
+            response.sendRedirect("login");
+            return;
+        }
+
+        // Actualizar datos desde el formulario
+        cliente.setNombre(request.getParameter("nombre"));
+        cliente.setEmail(request.getParameter("email"));
+        cliente.setTelefono(request.getParameter("telefono"));
+        cliente.setDireccion(request.getParameter("direccion"));
+
+        clienteDAO.actualizar(cliente);
+
+        // Refrescar sesión con datos actualizados
+        session.setAttribute("cliente", cliente);
+
+        request.setAttribute("mensaje", "Perfil actualizado correctamente.");
+        request.getRequestDispatcher("perfil.jsp").forward(request, response);
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.getRequestDispatcher("perfil.jsp").forward(request, response);
+    }
+}

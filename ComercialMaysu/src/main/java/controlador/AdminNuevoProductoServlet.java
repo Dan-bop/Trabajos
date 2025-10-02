@@ -1,0 +1,30 @@
+package controlador;
+
+import java.io.IOException;
+import dao.ProductoDAO;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.*;
+import modelo.Producto;
+import java.math.BigDecimal;
+
+@WebServlet("/AdminNuevoProductoServlet")
+public class AdminNuevoProductoServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String nombre = request.getParameter("nombre");
+        String descripcion = request.getParameter("descripcion");
+        BigDecimal precio = new BigDecimal(request.getParameter("precio"));
+        int stock = Integer.parseInt(request.getParameter("stock"));
+
+        Producto producto = new Producto();
+        producto.setNombre(nombre);
+        producto.setDescripcion(descripcion);
+        producto.setPrecio(precio);
+        producto.setStock(stock);
+
+        new ProductoDAO().insertar(producto);
+        response.sendRedirect("AdminProductosServlet");
+    }
+}

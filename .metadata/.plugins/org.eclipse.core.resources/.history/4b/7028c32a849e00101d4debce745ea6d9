@@ -1,0 +1,20 @@
+package modelo;
+
+import java.util.List;
+
+import jakarta.persistence.EntityManager;
+import util.JPAUtil;
+
+public class Envio {
+	public List<Envio> listarTodos() {
+	    EntityManager em = JPAUtil.getEntityManager();
+	    try {
+	        return em.createQuery("SELECT e FROM Envio e ORDER BY e.nombre ASC", Envio.class)
+	                 .getResultList();
+	    } finally {
+	        em.close();
+	    }
+	}
+
+
+}

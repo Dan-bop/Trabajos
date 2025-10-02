@@ -1,0 +1,139 @@
+package dao;
+
+import java.util.List;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import modelo.Producto;
+import modelo.ProductoTop;
+import util.JPAUtil;
+
+public class ProductoDAO {
+
+    // Listar todos los productos (para catálogo)
+    public List<Producto> listar() {
+        EntityManager em = JPAUtil.getEntityManager();
+        List<Producto> productos = null;
+        try {
+            TypedQuery<Producto> query = em.createQuery("SELECT p FROM Producto p", Producto.class);
+            productos = query.getResultList();
+        } catch (Exception e) {
+            System.err.println("❌ Error al listar todos los productos: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
+        }
+        return productos;
+    }
+
+    // Listar productos destacados (para home.jsp)
+    public List<Producto> listarDestacados() {
+        EntityManager em = JPAUtil.getEntityManager();
+        List<Producto> destacados = null;
+        try {
+            TypedQuery<Producto> query = em.createQuery(
+                "SELECT p FROM Producto p WHERE p.destacado = true", Producto.class
+            );
+            destacados = query.getResultList();
+        } catch (Exception e) {
+            System.err.println("❌ Error al listar productos destacados: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
+        }
+        return destacados;
+    }
+
+    public Producto buscarPorId(int id) {
+        EntityManager em = JPAUtil.getEntityManager();
+        Producto producto = null;
+        try {
+            producto = em.find(Producto.class, id);
+        } catch (Exception e) {
+            System.err.println("❌ Error al buscar producto por ID: " + e.getMessage());
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
+        }
+        return producto;
+    }
+
+    public List<Producto> listarTodos() {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            return em.createQuery("SELECT p FROM Producto p ORDER BY p.nombre ASC", Producto.class)
+                     .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public void insertar(Producto producto) {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(producto);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+        } finally {
+            em.close();
+        }
+    }
+
+    public void actualizar(Producto producto) {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.merge(producto);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+        } finally {
+            em.close();
+        }
+    }
+
+    public void eliminar(int id) {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            Producto producto = em.find(Producto.class, id);
+            if (producto != null) {
+                em.getTransaction().begin();
+                em.remove(producto);
+                em.getTransaction().commit();
+            }
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+        } finally {
+            em.close();
+        }
+    }
+
+    public ProductoTop obtenerProductoMasVendido() {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+        	Object result = em.createQuery("SELECT i.producto.nombre, SUM(i.cantidad) FROM ItemPedido i GROUP BY i.producto.nombre ORDER BY SUM(i.cantidad) DESC")
+        		    .setMaxResults(1)
+        		    .getSingleResult();
+
+        		Object[] row = (Object[]) result; // ✅ Cast explícito
+        		String nombre = (String) row[0];
+        		Long cantidad = (Long) row[1];
+
+        		return new ProductoTop(nombre, cantidad.intValue());
+
+            
+        } finally {
+            em.close();
+        }
+    }
+
+	}
+
+
+}

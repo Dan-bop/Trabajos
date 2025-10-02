@@ -1,0 +1,42 @@
+package controlador;
+
+import java.io.IOException;
+import java.sql.Timestamp;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.*;
+import modelo.Cliente;
+import dao.ClienteDAO;
+
+@WebServlet("/registro")
+public class RegistroServlet extends HttpServlet {
+    private ClienteDAO clienteDAO = new ClienteDAO();
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String nombres = request.getParameter("nombres");
+        String apellidos = request.getParameter("apellidos");
+        String correo = request.getParameter("correo");
+        String clave = request.getParameter("clave");
+
+        Cliente nuevo = new Cliente();
+        nuevo.setNombre(request.getParameter("nombre")); // usa "nombre" en el formulario
+        nuevo.setEmail(request.getParameter("email"));
+        nuevo.setPassword(request.getParameter("password"));
+        nuevo.setFechaRegistro(new Timestamp(System.currentTimeMillis()));
+
+        if (clienteDAO.existeCorreo(correo)) {
+            request.setAttribute("mensaje", "Ya existe una cuenta con ese correo.");
+            request.getRequestDispatcher("registro.jsp").forward(request, response);
+            return;
+        }
+
+
+        clienteDAO.guardar(nuevo);
+
+        request.setAttribute("mensaje", "Registro exitoso. Ahora puedes iniciar sesión.");
+        request.getRequestDispatcher("registro.jsp").forward(request, response);
+    }
+}

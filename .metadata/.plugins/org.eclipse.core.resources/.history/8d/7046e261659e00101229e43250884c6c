@@ -1,0 +1,54 @@
+package controlador;
+
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.List;
+
+import dao.CarritoDAO;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.*;
+import modelo.*;
+
+@WebServlet("/confirmarPedido")
+public class ConfirmarPedidoServlet extends HttpServlet {
+    private CarritoDAO carritoDAO = new CarritoDAO();
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        HttpSession session = request.getSession();
+        List<ItemCarrito> items = (List<ItemCarrito>) session.getAttribute("carrito");
+        Cliente cliente = (Cliente) session.getAttribute("cliente"); // debe estar logueado
+
+        if (items == null || items.isEmpty() || cliente == null) {
+            response.sendRedirect("checkout");
+            return;
+        }
+
+        // Crear entidad Carrito
+        Carrito carrito = new Carrito();
+        carrito.setCliente(cliente);
+        carrito.setFecha(Timestamp.from(Instant.now()));
+
+        // Crear detalles
+        for (ItemCarrito item : items) {
+            DetalleCarrito detalle = new DetalleCarrito();
+            detalle.setProducto(item.getProducto());
+            detalle.setCantidad(item.getCantidad());
+            detalle.setPrecioUnitario(item.getPrecioUnitario());
+            detalle.setCarrito(carrito); // relación bidireccional
+            carrito.addDetalleCarrito(detalle);
+        }
+
+        // Guardar en BD
+        carritoDAO.guardar(carrito);
+
+        // Limpiar sesión
+        session.removeAttribute("carrito");
+
+        // Redirigir a página de confirmación
+        response.sendRedirect("pedidoConfirmado.jsp");
+    }
+}

@@ -1,0 +1,149 @@
+package modelo;
+
+import java.io.Serializable;
+import jakarta.persistence.*;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.List;
+
+
+/**
+ * The persistent class for the pedido database table.
+ * 
+ */
+@Entity
+@NamedQuery(name="Pedido.findAll", query="SELECT p FROM Pedido p")
+public class Pedido implements Serializable {
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	private int id;
+
+	private String estado;
+
+	private Timestamp fecha;
+
+	@Column(name="metodo_envio")
+	private String metodoEnvio;
+
+	@Column(name="metodo_pago")
+	private String metodoPago;
+
+	private BigDecimal total;
+
+	//bi-directional many-to-one association to DetallePedido
+	@OneToMany(mappedBy="pedido")
+	private List<DetallePedido> detallePedidos;
+
+	//bi-directional many-to-one association to Pago
+	@OneToMany(mappedBy="pedido")
+	private List<Pago> pagos;
+
+	//bi-directional many-to-one association to Cliente
+	@ManyToOne
+	private Cliente cliente;
+
+	public Pedido() {
+	}
+
+	public int getId() {
+		return this.id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getEstado() {
+		return this.estado;
+	}
+
+	public void setEstado(String estado) {
+		this.estado = estado;
+	}
+
+	public Timestamp getFecha() {
+		return this.fecha;
+	}
+
+	public void setFecha(Timestamp fecha) {
+		this.fecha = fecha;
+	}
+
+	public String getMetodoEnvio() {
+		return this.metodoEnvio;
+	}
+
+	public void setMetodoEnvio(String metodoEnvio) {
+		this.metodoEnvio = metodoEnvio;
+	}
+
+	public String getMetodoPago() {
+		return this.metodoPago;
+	}
+
+	public void setMetodoPago(String metodoPago) {
+		this.metodoPago = metodoPago;
+	}
+
+	public BigDecimal getTotal() {
+		return this.total;
+	}
+
+	public void setTotal(BigDecimal total) {
+		this.total = total;
+	}
+
+	public List<DetallePedido> getDetallePedidos() {
+		return this.detallePedidos;
+	}
+
+	public void setDetallePedidos(List<DetallePedido> detallePedidos) {
+		this.detallePedidos = detallePedidos;
+	}
+
+	public DetallePedido addDetallePedido(DetallePedido detallePedido) {
+		getDetallePedidos().add(detallePedido);
+		detallePedido.setPedido(this);
+
+		return detallePedido;
+	}
+
+	public DetallePedido removeDetallePedido(DetallePedido detallePedido) {
+		getDetallePedidos().remove(detallePedido);
+		detallePedido.setPedido(null);
+
+		return detallePedido;
+	}
+
+	public List<Pago> getPagos() {
+		return this.pagos;
+	}
+
+	public void setPagos(List<Pago> pagos) {
+		this.pagos = pagos;
+	}
+
+	public Pago addPago(Pago pago) {
+		getPagos().add(pago);
+		pago.setPedido(this);
+
+		return pago;
+	}
+
+	public Pago removePago(Pago pago) {
+		getPagos().remove(pago);
+		pago.setPedido(null);
+
+		return pago;
+	}
+
+	public Cliente getCliente() {
+		return this.cliente;
+	}
+
+	public void setCliente(Cliente cliente) {
+		this.cliente = cliente;
+	}
+
+}

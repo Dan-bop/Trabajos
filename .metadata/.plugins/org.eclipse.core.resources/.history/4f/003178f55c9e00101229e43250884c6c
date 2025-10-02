@@ -1,0 +1,28 @@
+package controlador;
+
+import dao.ProductoDAO;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import modelo.Producto;
+
+import java.io.IOException;
+import java.util.List;
+
+@WebServlet("/productos")
+public class ProductoServlet extends HttpServlet {
+    private ProductoDAO productoDAO = new ProductoDAO();
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        List<Producto> productos = productoDAO.listar();
+
+        // Pasamos la lista al JSP
+        request.setAttribute("productos", productos);
+        request.getRequestDispatcher("productos.jsp").forward(request, response);
+    }
+}

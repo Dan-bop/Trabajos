@@ -1,0 +1,28 @@
+package dao;
+
+import java.util.List;
+
+import jakarta.persistence.EntityManager;
+import modelo.Envio;
+import util.JPAUtil;
+
+public class EnvioDAO {
+	public List<Envio> listarTodos() {
+	    EntityManager em = JPAUtil.getEntityManager();
+	    try {
+	        return em.createQuery("SELECT e FROM Envio e ORDER BY e.nombre ASC", Envio.class)
+	                 .getResultList();
+	    } finally {
+	        em.close();
+	    }
+	}
+
+	public Envio buscarPorId(int id) {
+	    EntityManager em = JPAUtil.getEntityManager();
+	    try {
+	        return em.find(Envio.class, id);
+	    } finally {
+	        em.close();
+	    }
+	}
+	}

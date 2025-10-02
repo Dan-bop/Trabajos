@@ -1,0 +1,175 @@
+package modelo;
+
+import java.io.Serializable;
+import jakarta.persistence.*;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.List;
+
+
+
+@Entity
+@NamedQuery(name="Producto.findAll", query="SELECT p FROM Producto p")
+public class Producto implements Serializable {
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	private int id;
+
+	private String categoria;
+
+	@Lob
+	private String descripcion;
+
+	private boolean destacado;
+
+	@Column(name="fecha_ingreso")
+	private Timestamp fechaIngreso;
+
+	private String imagen;
+
+	private String nombre;
+
+	private BigDecimal precio;
+
+	private int stock;
+
+	@Column(name="unidad_medida")
+	private String unidadMedida;
+
+	//bi-directional many-to-one association to DetalleCarrito
+	@OneToMany(mappedBy="producto")
+	private List<DetalleCarrito> detalleCarritos;
+
+	//bi-directional many-to-one association to DetallePedido
+	@OneToMany(mappedBy="producto")
+	private List<DetallePedido> detallePedidos;
+
+	public Producto() {
+	}
+
+	public int getId() {
+		return this.id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getCategoria() {
+		return this.categoria;
+	}
+
+	public void setCategoria(String categoria) {
+		this.categoria = categoria;
+	}
+
+	public String getDescripcion() {
+		return this.descripcion;
+	}
+
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
+	}
+
+	public byte getDestacado() {
+		return this.destacado;
+	}
+
+	public void setDestacado(boolean destacado) {
+		this.destacado = destacado;
+	}
+
+	public Timestamp getFechaIngreso() {
+		return this.fechaIngreso;
+	}
+
+	public void setFechaIngreso(Timestamp fechaIngreso) {
+		this.fechaIngreso = fechaIngreso;
+	}
+
+	public String getImagen() {
+		return this.imagen;
+	}
+
+	public void setImagen(String imagen) {
+		this.imagen = imagen;
+	}
+
+	public String getNombre() {
+		return this.nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public BigDecimal getPrecio() {
+		return this.precio;
+	}
+
+	public void setPrecio(BigDecimal precio) {
+		this.precio = precio;
+	}
+
+	public int getStock() {
+		return this.stock;
+	}
+
+	public void setStock(int stock) {
+		this.stock = stock;
+	}
+
+	public String getUnidadMedida() {
+		return this.unidadMedida;
+	}
+
+	public void setUnidadMedida(String unidadMedida) {
+		this.unidadMedida = unidadMedida;
+	}
+
+	public List<DetalleCarrito> getDetalleCarritos() {
+		return this.detalleCarritos;
+	}
+
+	public void setDetalleCarritos(List<DetalleCarrito> detalleCarritos) {
+		this.detalleCarritos = detalleCarritos;
+	}
+
+	public DetalleCarrito addDetalleCarrito(DetalleCarrito detalleCarrito) {
+		getDetalleCarritos().add(detalleCarrito);
+		detalleCarrito.setProducto(this);
+
+		return detalleCarrito;
+	}
+
+	public DetalleCarrito removeDetalleCarrito(DetalleCarrito detalleCarrito) {
+		getDetalleCarritos().remove(detalleCarrito);
+		detalleCarrito.setProducto(null);
+
+		return detalleCarrito;
+	}
+
+	public List<DetallePedido> getDetallePedidos() {
+		return this.detallePedidos;
+	}
+
+	public void setDetallePedidos(List<DetallePedido> detallePedidos) {
+		this.detallePedidos = detallePedidos;
+	}
+
+	public DetallePedido addDetallePedido(DetallePedido detallePedido) {
+		getDetallePedidos().add(detallePedido);
+		detallePedido.setProducto(this);
+
+		return detallePedido;
+	}
+
+	public DetallePedido removeDetallePedido(DetallePedido detallePedido) {
+		getDetallePedidos().remove(detallePedido);
+		detallePedido.setProducto(null);
+
+		return detallePedido;
+	}
+
+}

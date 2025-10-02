@@ -1,0 +1,23 @@
+package dao;
+
+import jakarta.persistence.EntityManager;
+import modelo.Pedido;
+import util.JPAUtil;
+
+public class PedidoDAO {
+
+    public void guardar(Pedido pedido) {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(pedido);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+}

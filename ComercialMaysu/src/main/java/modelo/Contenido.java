@@ -1,0 +1,69 @@
+package modelo;
+
+import java.io.Serializable;
+import jakarta.persistence.*;
+import java.sql.Timestamp;
+
+
+
+@Entity
+@NamedQuery(name="Contenido.findAll", query="SELECT c FROM Contenido c")
+public class Contenido implements Serializable {
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	private int id;
+
+	@Lob
+	private String descripcion;
+
+	private Timestamp fecha;
+
+	private String tipo;
+
+	private String titulo;
+
+	public Contenido() {
+	}
+
+	public int getId() {
+		return this.id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getDescripcion() {
+		return this.descripcion;
+	}
+
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
+	}
+
+	public Timestamp getFecha() {
+		return this.fecha;
+	}
+
+	public void setFecha(Timestamp fecha) {
+		this.fecha = fecha;
+	}
+
+	public String getTipo() {
+		return this.tipo;
+	}
+
+	public void setTipo(String tipo) {
+		this.tipo = tipo;
+	}
+
+	public String getTitulo() {
+		return this.titulo;
+	}
+
+	public void setTitulo(String titulo) {
+		this.titulo = titulo;
+	}
+
+}

@@ -1,0 +1,70 @@
+package dao;
+
+import java.util.List;
+
+import jakarta.persistence.EntityManager;
+import modelo.Contenido;
+import util.JPAUtil;
+
+public class ContenidoDAO {
+
+
+	    public List<Contenido> listarTodos() {
+	        EntityManager em = JPAUtil.getEntityManager();
+	        try {
+	            return em.createQuery("SELECT c FROM Contenido c ORDER BY c.fecha DESC", Contenido.class).getResultList();
+	        } finally {
+	            em.close();
+	        }
+	    }
+
+	    public Contenido buscarPorId(int id) {
+	        EntityManager em = JPAUtil.getEntityManager();
+	        try {
+	            return em.find(Contenido.class, id);
+	        } finally {
+	            em.close();
+	        }
+	    }
+
+	    public void crear(Contenido c) {
+	        EntityManager em = JPAUtil.getEntityManager();
+	        try {
+	            em.getTransaction().begin();
+	            em.persist(c);
+	            em.getTransaction().commit();
+	        } catch (Exception e) {
+	            em.getTransaction().rollback();
+	        } finally {
+	            em.close();
+	        }
+	    }
+
+	    public void actualizar(Contenido c) {
+	        EntityManager em = JPAUtil.getEntityManager();
+	        try {
+	            em.getTransaction().begin();
+	            em.merge(c);
+	            em.getTransaction().commit();
+	        } catch (Exception e) {
+	            em.getTransaction().rollback();
+	        } finally {
+	            em.close();
+	        }
+	    }
+
+	    public void eliminar(int id) {
+	        EntityManager em = JPAUtil.getEntityManager();
+	        try {
+	            em.getTransaction().begin();
+	            Contenido c = em.find(Contenido.class, id);
+	            em.remove(c);
+	            em.getTransaction().commit();
+	        } catch (Exception e) {
+	            em.getTransaction().rollback();
+	        } finally {
+	            em.close();
+	        }
+	    }
+	}
+

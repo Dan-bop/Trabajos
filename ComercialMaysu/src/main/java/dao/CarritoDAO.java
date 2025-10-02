@@ -1,0 +1,44 @@
+package dao;
+
+import java.util.List;
+
+import jakarta.persistence.EntityManager;
+import modelo.Carrito;
+import util.JPAUtil;
+
+public class CarritoDAO {
+
+    public void guardar(Carrito carrito) {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(carrito); // guarda carrito y cascada sus detalles
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            System.err.println("❌ Error al guardar el carrito: " + e.getMessage());
+            em.getTransaction().rollback();
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    public List<Carrito> listarPorCliente(int idCliente) {
+        EntityManager em = JPAUtil.getEntityManager();
+        List<Carrito> lista = null;
+        try {
+            lista = em.createQuery(
+                "SELECT c FROM Carrito c WHERE c.cliente.id = :id ORDER BY c.fecha DESC", Carrito.class)
+                .setParameter("id", idCliente)
+                .getResultList();
+        } catch (Exception e) {
+            lista = List.of();
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
+        }
+        return lista;
+    }
+}
